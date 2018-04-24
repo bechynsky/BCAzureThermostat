@@ -26,7 +26,7 @@ namespace BCAzureThermostat
 
         public override string ToString()
         {
-            return $"Event: {Subject} ({StartTime.ToString()}, {EndTime.ToString()}";
+            return $"Event: {Subject} ({StartTime.ToString()}, {EndTime.ToString()})";
         }
     }
     class Program
