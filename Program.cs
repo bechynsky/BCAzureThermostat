@@ -85,7 +85,8 @@ namespace BCAzureThermostat
             string measurement = topicParts[4];
             string value = System.Text.Encoding.Default.GetString(e.Message);
 
-            if (device.Equals("kit-lcd-thermostat:0") && 
+            string data = "";
+            if (device.Equals("temperature-button:0") && 
                 sensor.Equals("thermometer") && 
                 measurement.Equals("temperature"))
             {
@@ -97,17 +98,20 @@ namespace BCAzureThermostat
                 {
                     _lastTemperature = double.Parse(value);
                 } 
-
+                data = $"{{\"temperature\":{_lastTemperature}, \"settemperature\":{_lastSetTemperature}}}";
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine($"Temperature is {_lastTemperature} and should be {_lastSetTemperature}.");
                 Console.ResetColor();
             }
 
-            string data = $"{{\"device\":\"{device}\",\"sensor\":\"{sensor}\",\"sensorInfo\":\"{sensorInfo}\",\"measurement\":\"{measurement}\",\"value\":{value}}}"; 
-            Message payload = new Message(System.Text.Encoding.UTF8.GetBytes(data));
-            await _deviceClient.SendEventAsync(payload);
+            if (data.Length > 0)
+            {
+                // data = $"{{\"device\":\"{device}\",\"sensor\":\"{sensor}\",\"sensorInfo\":\"{sensorInfo}\",\"measurement\":\"{measurement}\",\"value\":{value}}}"; 
+                Message payload = new Message(System.Text.Encoding.UTF8.GetBytes(data));
+                await _deviceClient.SendEventAsync(payload);
 
-            Console.WriteLine(data);            
+                Console.WriteLine(data);            
+            }
         }
 
         private static async void ReceiveC2dAsync()
